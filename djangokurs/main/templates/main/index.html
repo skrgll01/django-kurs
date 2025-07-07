@@ -1,0 +1,296 @@
+{% extends "main/layout.html" %}
+
+{% block extra_css %}
+<style>
+  /* Ana container stilleri */
+  .courses-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+
+  /* Başlık stilleri */
+  .courses-title {
+    color: #2c3e50;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    font-size: 2.5rem;
+  }
+
+  .courses-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+  }
+
+  /* Kurs kartı stilleri */
+  .course-card {
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    
+    /* Gelişmiş gölgelendirme */
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.04);
+    
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  /* Hover efektleri */
+  .course-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.12),
+      0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .course-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Kurs içeriği */
+  .course-content {
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .course-title {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .course-description {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* Resim stilleri */
+  .course-img-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .course-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .course-card:hover .course-img {
+    transform: scale(1.08);
+  }
+
+  .course-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .course-card:hover .course-img-overlay {
+    opacity: 1;
+  }
+
+  /* Link stilleri */
+  .course-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
+    height: 100%;
+  }
+
+  .course-link:hover {
+    color: inherit !important;
+  }
+
+  /* Boş durum stilleri */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+    font-size: 1.1rem;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Responsive tasarım */
+  @media (max-width: 768px) {
+    .courses-title {
+      font-size: 2rem;
+    }
+    
+    .course-content {
+      padding: 1.5rem;
+    }
+    
+    .course-img {
+      height: 180px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .courses-container {
+      padding: 1rem 0;
+    }
+    
+    .courses-title {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+    
+    .course-content {
+      padding: 1.25rem;
+    }
+  }
+
+  /* Animasyon için */
+  .course-card {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .course-card:nth-child(1) { animation-delay: 0.1s; }
+  .course-card:nth-child(2) { animation-delay: 0.2s; }
+  .course-card:nth-child(3) { animation-delay: 0.3s; }
+  .course-card:nth-child(4) { animation-delay: 0.4s; }
+  .course-card:nth-child(5) { animation-delay: 0.5s; }
+  .course-card:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Yükleme animasyonu */
+  .loading-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="courses-container">
+  <div class="container">
+    <h1 class="courses-title">Kurslar</h1>
+    
+    <div class="row g-4">
+      {% for course in courses %}
+        <div class="col-12 col-lg-6">
+          <a href="{% url 'getCourses' course.slug %}" class="course-link">
+            <div class="course-card">
+              <div class="course-content">
+                <h4 class="course-title">{{ course.title }}</h4>
+                <p class="course-description">{{ course.description|truncatechars:80 }}</p>
+                
+                <div class="course-img-container">
+                  <img src="{{ course.images.url }}" alt="{{ course.title }}" class="course-img">
+                  <div class="course-img-overlay"></div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <p>Bu kategoriye ait aktif kurs bulunamadı.</p>
+            <small>Yeni kurslar yakında eklenecek, takipte kalın!</small>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+// Lazy loading için intersection observer
+document.addEventListener('DOMContentLoaded', function() {
+  const images = document.querySelectorAll('.course-img');
+  
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.classList.remove('loading-shimmer');
+          observer.unobserve(img);
+        }
+      });
+    });
+
+    images.forEach(img => {
+      img.classList.add('loading-shimmer');
+      imageObserver.observe(img);
+    });
+  }
+
+  // Smooth scroll için
+  document.querySelectorAll('.course-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      // Burada gerekirse özel işlemler yapılabilir
+    });
+  });
+});
+</script>
+{% endblock extra_scripts %}

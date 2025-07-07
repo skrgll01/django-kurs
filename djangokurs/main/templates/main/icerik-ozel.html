@@ -1,0 +1,432 @@
+{% extends "main/layout.html" %}
+
+{% block extra_css %}
+<style>
+/* Video Player Styles */
+.video-container {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+}
+
+.video-player {
+  width: 100%;
+  max-height: 600px;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.video-player:hover {
+  transform: scale(1.02);
+}
+
+/* Course Header */
+.course-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px 0;
+}
+
+.course-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.course-subtitle {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  font-weight: 300;
+}
+
+/* Video Progress Bar */
+.video-progress {
+  background: rgba(255, 255, 255, 0.2);
+  height: 6px;
+  border-radius: 3px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.progress-bar-custom {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Video Info Card */
+.video-info-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border-left: 5px solid #007bff;
+}
+
+.video-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.video-meta {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Lessons List */
+.lessons-container {
+  background: white;
+  border-radius: 15px;
+  padding: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.lessons-header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 20px 25px;
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.lesson-item {
+  border: none;
+  padding: 20px 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.lesson-item:hover {
+  background-color: #f8f9fa;
+  transform: translateX(10px);
+}
+
+.lesson-item.active {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border-left: 5px solid #155724;
+}
+
+.lesson-item.active:hover {
+  background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+.lesson-number {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.lesson-duration {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.current-badge {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.play-btn {
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Controls */
+.video-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .course-title {
+    font-size: 2rem;
+  }
+  
+  .video-container {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .lesson-item {
+    padding: 15px 20px;
+  }
+  
+  .video-controls {
+    flex-wrap: wrap;
+  }
+}
+
+/* Loading Animation */
+.loading-spinner {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.spinner-border-custom {
+  width: 3rem;
+  height: 3rem;
+  border: 0.3em solid rgba(0, 123, 255, 0.2);
+  border-right-color: #007bff;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+  <!-- Course Header -->
+  <div class="course-header">
+    <h1 class="course-title">{{ course.title }}</h1>
+    <p class="course-subtitle">Profesyonel Video Eğitim Serisi</p>
+  </div>
+
+  <div class="row">
+    <!-- Video Section -->
+    <div class="col-lg-8 col-md-12 mb-4">
+      <!-- Video Container -->
+      <div class="video-container">
+        <video id="mainVideo" controls class="video-player">
+          <source src="{{ video.video.url }}" type="video/mp4">
+          Tarayıcınız video etiketini desteklemiyor.
+        </video>
+        
+        <!-- Video Progress -->
+        <div class="video-progress">
+          <div class="progress-bar-custom" id="videoProgress" style="width: 0%"></div>
+        </div>
+        
+        <!-- Video Controls -->
+        <div class="video-controls">
+          <button class="btn control-btn" id="prevBtn">
+            <i class="fas fa-step-backward"></i> Önceki
+          </button>
+          <button class="btn control-btn" id="playPauseBtn">
+            <i class="fas fa-play"></i> Oynat/Duraklat
+          </button>
+          <button class="btn control-btn" id="nextBtn">
+            Sonraki <i class="fas fa-step-forward"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Info Card -->
+      <div class="video-info-card">
+        <h3 class="video-title">Ders {{ videolar|length|add:"-"|add:video.id|add:1 }}: {{ video.title|default:"Video Dersi" }}</h3>
+        <div class="video-meta">
+          <i class="fas fa-clock"></i> Süre: <span id="videoDuration">--:--</span> | 
+          <i class="fas fa-eye"></i> İzlenme: {{ video.views|default:"0" }} | 
+          <i class="fas fa-calendar"></i> Eklenme: {{ video.created_at|date:"d M Y"|default:"Bugün" }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Lessons Sidebar -->
+    <div class="col-lg-4 col-md-12">
+      <div class="lessons-container">
+        <h5 class="lessons-header">
+          <i class="fas fa-list-ol"></i> Tüm Dersler ({{ videolar|length }})
+        </h5>
+        
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+          <div class="spinner-border-custom"></div>
+          <p class="mt-2">Video yükleniyor...</p>
+        </div>
+        
+        <ul class="list-group list-group-flush">
+          {% for v in videolar %}
+            <li class="list-group-item lesson-item d-flex justify-content-between align-items-center {% if v.id == video.id %}active{% endif %}" 
+                data-video-id="{{ v.id }}" data-video-url="{{ v.video.url }}">
+              <div>
+                <div class="lesson-number">
+                  <i class="fas fa-play-circle"></i> Ders {{ forloop.counter }}
+                </div>
+                <div class="lesson-duration">
+                  <i class="fas fa-clock"></i> {{ v.duration|default:"--:--" }}
+                </div>
+              </div>
+              
+              {% if v.id == video.id %}
+                <span class="badge current-badge">
+                  <i class="fas fa-dot-circle"></i> Şu An
+                </span>
+              {% else %}
+                <a href="{% url 'icerik' v.id %}" class="btn btn-sm btn-outline-primary play-btn">
+                  <i class="fas fa-play"></i> Oynat
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery Scripts -->
+<script>
+$(document).ready(function() {
+    const video = document.getElementById('mainVideo');
+    const progressBar = document.getElementById('videoProgress');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    // Video progress tracking
+    if (video) {
+        video.addEventListener('timeupdate', function() {
+            const progress = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = progress + '%';
+        });
+        
+        // Update duration when metadata loads
+        video.addEventListener('loadedmetadata', function() {
+            const duration = formatTime(video.duration);
+            $('#videoDuration').text(duration);
+        });
+        
+        // Loading state
+        video.addEventListener('loadstart', function() {
+            $('#loadingSpinner').show();
+        });
+        
+        video.addEventListener('canplay', function() {
+            $('#loadingSpinner').hide();
+        });
+    }
+    
+    // Play/Pause button
+    playPauseBtn.addEventListener('click', function() {
+        if (video.paused) {
+            video.play();
+            $(this).html('<i class="fas fa-pause"></i> Duraklat');
+        } else {
+            video.pause();
+            $(this).html('<i class="fas fa-play"></i> Oynat');
+        }
+    });
+    
+    // Previous/Next navigation
+    const currentVideoId = {{ video.id }};
+    const videoIds = [{% for v in videolar %}{{ v.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    const currentIndex = videoIds.indexOf(currentVideoId);
+    
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            window.location.href = "{% url 'icerik' 0 %}".replace('0', videoIds[currentIndex - 1]);
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex < videoIds.length - 1) {
+            window.location.href = "{% url 'icerik' 0 %}".replace('0', videoIds[currentIndex + 1]);
+        }
+    });
+    
+    // Disable buttons if at start/end
+    if (currentIndex === 0) {
+        prevBtn.disabled = true;
+        prevBtn.style.opacity = '0.5';
+    }
+    if (currentIndex === videoIds.length - 1) {
+        nextBtn.disabled = true;
+        nextBtn.style.opacity = '0.5';
+    }
+    
+    // Lesson item hover effects
+    $('.lesson-item:not(.active)').hover(
+        function() {
+            $(this).find('.play-btn').addClass('btn-primary').removeClass('btn-outline-primary');
+        },
+        function() {
+            $(this).find('.play-btn').addClass('btn-outline-primary').removeClass('btn-primary');
+        }
+    );
+    
+    // Auto-scroll to current lesson
+    $('.lesson-item.active')[0]?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+    
+    // Format time helper function
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+    
+    // Keyboard shortcuts
+    $(document).keydown(function(e) {
+        if (e.target.tagName.toLowerCase() !== 'input') {
+            switch(e.which) {
+                case 32: // Spacebar
+                    e.preventDefault();
+                    playPauseBtn.click();
+                    break;
+                case 37: // Left arrow
+                    video.currentTime -= 10;
+                    break;
+                case 39: // Right arrow
+                    video.currentTime += 10;
+                    break;
+            }
+        }
+    });
+    
+    // Show loading animation on page transitions
+    $('.play-btn').click(function(e) {
+        $(this).html('<i class="fas fa-spinner fa-spin"></i> Yükleniyor...');
+    });
+});
+</script>
+{% endblock content %}

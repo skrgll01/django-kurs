@@ -1,0 +1,685 @@
+{% extends "main/layout.html" %}
+
+{% block extra_css %}
+<style>
+/* Page Header */
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 0;
+  margin-bottom: 50px;
+  border-radius: 0 0 50px 50px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Main Container - Genişlik ve ortalama */
+.main-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Course Cards */
+.course-card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s ease;
+  margin-bottom: 30px;
+  overflow: hidden;
+  background: white;
+}
+
+.course-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.course-card-header {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-card-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+}
+
+.course-card:hover .course-card-header::before {
+  right: -40%;
+}
+
+.course-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.course-description {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  position: relative;
+  z-index: 2;
+}
+
+.course-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.course-stats {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.course-level {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Course Body */
+.course-card-body {
+  padding: 30px;
+}
+
+.lessons-header {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lessons-count {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Lesson Items */
+.lesson-item {
+  border: none;
+  padding: 18px 0;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.lesson-item:last-child {
+  border-bottom: none;
+}
+
+.lesson-item:hover {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 10px;
+  padding: 18px 15px;
+  margin: 0 -15px;
+}
+
+.lesson-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lesson-number {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.lesson-info {
+  flex-grow: 1;
+}
+
+.lesson-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.lesson-meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.play-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #007bff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+  color: white;
+}
+
+/* Progress Bar */
+.course-progress {
+  margin-top: 20px;
+}
+
+.progress-custom {
+  height: 8px;
+  border-radius: 10px;
+  background: #e9ecef;
+  overflow: hidden;
+}
+
+.progress-bar-custom {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 10px;
+  transition: width 0.8s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Filters */
+.filters-container {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  color: #6c757d;
+  padding: 10px 20px;
+  border-radius: 25px;
+  margin: 5px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-color: #007bff;
+  color: white;
+}
+
+/* Search Box */
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  padding: 12px 50px 12px 20px;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+/* Courses Grid - Geliştirilmiş grid sistemi */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px;
+  justify-content: center;
+  padding: 0 15px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.course-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .main-container {
+    max-width: 1200px;
+  }
+  
+  .courses-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2.2rem;
+  }
+  
+  .main-container {
+    padding: 0 15px;
+  }
+  
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .course-card-header {
+    padding: 20px;
+  }
+  
+  .course-title {
+    font-size: 1.5rem;
+  }
+  
+  .course-card-body {
+    padding: 20px;
+  }
+  
+  .lesson-item:hover {
+    margin: 0;
+    padding: 18px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* Loading Animation */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="page-title">
+        <i class="fas fa-graduation-cap"></i> Eğitim Kursları
+      </h1>
+      <p class="page-subtitle">Profesyonel video eğitimleriyle becerilerinizi geliştirin</p>
+    </div>
+  </div>
+</div>
+
+<!-- Ana Container - Ortalanmış ve Genişletilmiş -->
+<div class="main-container">
+  <!-- Filters -->
+  <div class="filters-container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="search-container">
+          <input type="text" class="form-control search-input" id="searchInput" placeholder="Kurs ara...">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="text-center">
+          <button class="btn filter-btn active" data-filter="all">
+            <i class="fas fa-th"></i> Tüm Kurslar
+          </button>
+          <button class="btn filter-btn" data-filter="beginner">
+            <i class="fas fa-seedling"></i> Başlangıç
+          </button>
+          <button class="btn filter-btn" data-filter="intermediate">
+            <i class="fas fa-star"></i> Orta
+          </button>
+          <button class="btn filter-btn" data-filter="advanced">
+            <i class="fas fa-crown"></i> İleri
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses Grid - Yeni Grid Sistemi -->
+  <div class="courses-grid" id="coursesContainer">
+    {% for course in courses %}
+    <div class="course-item" data-course-title="{{ course.title|lower }}" style="animation-delay: 0.{{ forloop.counter0 }}s">
+      <div class="card course-card">
+        <!-- Course Header -->
+        <div class="course-card-header">
+          <h3 class="course-title">
+            <i class="fas fa-play-circle"></i> {{ course.title }}
+          </h3>
+          <p class="course-description">
+            {{ course.description|default:"Bu kursta önemli konuları öğreneceksiniz." }}
+          </p>
+          
+          <div class="course-meta">
+            <div class="course-stats">
+              <i class="fas fa-video"></i> {{ course.videos.all.count }} Ders
+            </div>
+            <div class="course-level">
+              {% if course.level %}
+                {{ course.level }}
+              {% else %}
+                {% cycle 'Başlangıç' 'Orta' 'İleri' %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Body -->
+        <div class="course-card-body">
+          <div class="lessons-header">
+            <i class="fas fa-list-ol"></i>
+            Ders İçeriği
+            <span class="lessons-count">{{ course.videos.all.count }}</span>
+          </div>
+
+          <!-- Lessons List -->
+          <ul class="list-group list-group-flush">
+            {% for video in course.videos.all %}
+            <li class="lesson-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="lesson-content">
+                  <div class="lesson-number">{{ forloop.counter }}</div>
+                  <div class="lesson-info">
+                    <div class="lesson-title">
+                      Ders {{ forloop.counter }}: {{ video.title|default:"Video Dersi" }}
+                    </div>
+                    <div class="lesson-meta">
+                      <i class="fas fa-clock"></i> {{ video.duration|default:"15:30" }} | 
+                      <i class="fas fa-eye"></i> {{ video.views|default:"0" }} izlenme
+                    </div>
+                  </div>
+                </div>
+                <a href="{% url 'icerik' video.id %}" class="play-btn">
+                  <i class="fas fa-play"></i> İzle
+                </a>
+              </div>
+            </li>
+            {% empty %}
+            <li class="lesson-item">
+              <div class="text-center text-muted py-3">
+                <i class="fas fa-video-slash"></i>
+                Henüz ders eklenmemiş
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <!-- Progress Bar -->
+          <div class="course-progress">
+            <div class="progress-custom">
+              <div class="progress-bar-custom" style="width: {% cycle '25' '60' '80' '45' '90' %}%"></div>
+            </div>
+            <div class="progress-text">
+              İlerleme: {% cycle '25' '60' '80' '45' '90' %}% tamamlandı
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="text-center py-5">
+        <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+        <h3 class="text-muted">Henüz kurs bulunmuyor</h3>
+        <p class="text-muted">Yakında yeni kurslar eklenecek.</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- jQuery Scripts -->
+<script>
+$(document).ready(function() {
+    // Search functionality
+    $('#searchInput').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        
+        $('.course-item').each(function() {
+            const courseTitle = $(this).data('course-title');
+            if (courseTitle.includes(searchTerm)) {
+                $(this).fadeIn(300);
+            } else {
+                $(this).fadeOut(300);
+            }
+        });
+        
+        // Show no results message
+        setTimeout(function() {
+            const visibleCourses = $('.course-item:visible').length;
+            if (visibleCourses === 0 && searchTerm !== '') {
+                if ($('.no-results').length === 0) {
+                    $('#coursesContainer').append(
+                        '<div class="no-results text-center py-5" style="grid-column: 1/-1;">' +
+                        '<i class="fas fa-search fa-3x text-muted mb-3"></i>' +
+                        '<h3 class="text-muted">Aradığınız kursa ait sonuç bulunamadı</h3>' +
+                        '<p class="text-muted">Farklı anahtar kelimeler ile tekrar deneyin.</p>' +
+                        '</div>'
+                    );
+                }
+            } else {
+                $('.no-results').remove();
+            }
+        }, 300);
+    });
+    
+    // Filter functionality
+    $('.filter-btn').click(function() {
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        const filter = $(this).data('filter');
+        
+        if (filter === 'all') {
+            $('.course-item').fadeIn(300);
+        } else {
+            $('.course-item').hide();
+            $(`.course-item[data-level="${filter}"]`).fadeIn(300);
+        }
+    });
+    
+    // Play button hover effect
+    $('.play-btn').hover(
+        function() {
+            $(this).html('<i class="fas fa-play"></i> Başlat');
+        },
+        function() {
+            $(this).html('<i class="fas fa-play"></i> İzle');
+        }
+    );
+    
+    // Loading animation for course navigation
+    $('.play-btn').click(function(e) {
+        $('#loadingOverlay').show();
+        $(this).html('<i class="fas fa-spinner fa-spin"></i> Yükleniyor...');
+    });
+    
+    // Hide loading overlay on page show (handles back button)
+    $(window).on('pageshow', function(event) {
+        $('#loadingOverlay').hide();
+        // Reset button text
+        $('.play-btn').each(function() {
+            $(this).html('<i class="fas fa-play"></i> İzle');
+        });
+    });
+    
+    // Hide loading overlay on page load
+    $(window).on('load', function() {
+        $('#loadingOverlay').fadeOut(300);
+    });
+    
+    // Hide loading overlay when page becomes visible (tab switching)
+    $(document).on('visibilitychange', function() {
+        if (!document.hidden) {
+            $('#loadingOverlay').hide();
+        }
+    });
+    
+    // Course card animations on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, observerOptions);
+    
+    $('.course-card').each(function() {
+        observer.observe(this);
+    });
+    
+    // Smooth scroll for better UX
+    $('html').css('scroll-behavior', 'smooth');
+    
+    // Progress bar animation
+    $('.progress-bar-custom').each(function() {
+        const width = $(this).css('width');
+        $(this).css('width', '0%').animate({
+            width: width
+        }, 1500);
+    });
+    
+    // Course statistics counter animation
+    function animateCounters() {
+        $('.lessons-count').each(function() {
+            const $this = $(this);
+            const countTo = parseInt($this.text());
+            
+            $({ countNum: 0 }).animate({
+                countNum: countTo
+            }, {
+                duration: 1000,
+                easing: 'swing',
+                step: function() {
+                    $this.text(Math.floor(this.countNum));
+                },
+                complete: function() {
+                    $this.text(this.countNum);
+                }
+            });
+        });
+    }
+    
+    // Trigger counter animation on page load
+    setTimeout(animateCounters, 500);
+});
+</script>
+{% endblock content %}

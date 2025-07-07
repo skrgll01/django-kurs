@@ -1,0 +1,892 @@
+
+{% extends "main/layout.html" %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Kurs Ekle</title>
+    {% block extra_css %}
+    <style>
+.course-form-wrapper {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: calc(100vh - 200px);
+  padding: 3rem 0;
+  margin: -1.5rem -15px 0 -15px;
+}
+
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  transition: all 0.4s ease;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-container:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
+}
+
+.form-header {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 15px,
+    rgba(255, 255, 255, 0.1) 15px,
+    rgba(255, 255, 255, 0.1) 30px
+  );
+  animation: slidePattern 25s linear infinite;
+}
+
+@keyframes slidePattern {
+  0% { transform: translateX(-60px) translateY(-60px); }
+  100% { transform: translateX(60px) translateY(60px); }
+}
+
+.form-header h2 {
+  color: white;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.form-header .subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.2rem;
+  margin-top: 0.8rem;
+  position: relative;
+  z-index: 2;
+  font-weight: 300;
+}
+
+.form-body {
+  padding: 2.5rem;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  max-width: 150px;
+}
+
+.step-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.step.active .step-circle {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+}
+
+.step-title {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: center;
+  font-weight: 500;
+}
+
+.step.active .step-title {
+  color: #4facfe;
+  font-weight: 600;
+}
+
+.step-connector {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  right: -50%;
+  height: 2px;
+  background: #e9ecef;
+  z-index: 1;
+}
+
+.step:last-child .step-connector {
+  display: none;
+}
+
+.step.active .step-connector {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.form-section {
+  background: rgba(248, 249, 250, 0.6);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-left: 5px solid #4facfe;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.03) 0%, rgba(0, 242, 254, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.form-section:hover::before {
+  opacity: 1;
+}
+
+.form-section:hover {
+  transform: translateX(8px);
+  border-left-color: #00f2fe;
+  background: rgba(248, 249, 250, 0.9);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.section-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+}
+
+.section-title {
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 1.8rem;
+  position: relative;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.7rem;
+  display: block;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-control, .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  width: 100%;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #4facfe;
+  box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+  background: white;
+  transform: translateY(-3px);
+  outline: none;
+}
+
+.form-control:hover, .form-select:hover {
+  border-color: #4facfe;
+  background: white;
+}
+
+.video-upload-zone {
+  border: 3px dashed #4facfe;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: rgba(79, 172, 254, 0.05);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-upload-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-upload-zone:hover {
+  border-color: #00f2fe;
+  transform: scale(1.02);
+  background: rgba(79, 172, 254, 0.1);
+}
+
+.video-upload-zone:hover::before {
+  opacity: 1;
+}
+
+.upload-icon {
+  font-size: 4rem;
+  color: #4facfe;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+.upload-text {
+  color: #495057;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.upload-hint {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 2;
+}
+
+.file-input-btn {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 2.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+}
+
+.file-input-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
+}
+
+/* Gizli file input */
+.hidden-file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  overflow: hidden;
+}
+
+.submit-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  width: 100%;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.submit-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+}
+
+.submit-button:active {
+  transform: translateY(-2px);
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+.submit-button:hover::before {
+  left: 100%;
+}
+
+.error-alert {
+  background: rgba(220, 53, 69, 0.1);
+  border: 2px solid rgba(220, 53, 69, 0.3);
+  color: #dc3545;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  animation: shake 0.6s ease-in-out;
+  font-weight: 500;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* Custom Switch Styling */
+.form-check.form-switch {
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(79, 172, 254, 0.05);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(79, 172, 254, 0.2);
+  transition: all 0.3s ease;
+}
+
+.form-check.form-switch:hover {
+  background: rgba(79, 172, 254, 0.1);
+  border-color: rgba(79, 172, 254, 0.4);
+  transform: translateY(-2px);
+}
+
+.custom-switch {
+  width: 60px !important;
+  height: 30px !important;
+  background-color: #dee2e6 !important;
+  border: none !important;
+  border-radius: 50px !important;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 !important;
+}
+
+.custom-switch:checked {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+}
+
+.custom-switch:focus {
+  box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25) !important;
+  outline: none;
+}
+
+.custom-switch::before {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.custom-switch:checked::before {
+  transform: translateX(30px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.form-check-label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.file-list {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(40, 167, 69, 0.1);
+  border-radius: 10px;
+  border: 2px solid rgba(40, 167, 69, 0.3);
+  display: none;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-icon {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.file-name {
+  color: #155724;
+  font-weight: 500;
+  flex: 1;
+}
+
+.file-size {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .course-form-wrapper {
+    padding: 2rem 0;
+    margin: -1.5rem -15px 0 -15px;
+  }
+  
+  .form-container {
+    margin: 0 1rem;
+    border-radius: 15px;
+  }
+  
+  .form-header {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-header h2 {
+    font-size: 2rem;
+  }
+  
+  .form-body {
+    padding: 2rem 1.5rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem;
+  }
+  
+  .progress-steps {
+    margin-bottom: 2rem;
+  }
+  
+  .step {
+    max-width: 100px;
+  }
+  
+  .step-circle {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .step-title {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .progress-steps {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .step-connector {
+    display: none;
+  }
+  
+  .video-upload-zone {
+    padding: 2rem 1rem;
+  }
+  
+  .upload-icon {
+    font-size: 3rem;
+  }
+}
+</style>
+{% endblock extra_css %}
+</head>
+<body>
+{% block content %}
+<div class="course-form-wrapper">
+  <div class="container">
+    <div class="form-container">
+      <!-- Form Header -->
+      <div class="form-header">
+        <h2>Yeni Kurs Ekle</h2>
+        <div class="subtitle">Öğrencileriniz için harika bir kurs oluşturun</div>
+      </div>
+
+      <div class="form-body">
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+          <div class="step active">
+            <div class="step-circle">1</div>
+            <div class="step-title">Kurs Bilgileri</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step">
+            <div class="step-circle">2</div>
+            <div class="step-title">Video İçerik</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-title">Tamamla</div>
+          </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="courseForm">
+          
+          <!-- Kurs Bilgileri Bölümü -->
+          <div class="form-section">
+            <div class="section-header">
+              <div class="section-icon">📚</div>
+              <h3 class="section-title">Kurs Bilgileri</h3>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="courseName">Kurs Adı</label>
+              <input type="text" name="courseName" id="courseName" class="form-control" required placeholder="Kurs Adı">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="courseDescription">Kurs Açıklaması</label>
+              <textarea name="courseDescription" id="courseDescription" class="form-control" rows="4" required placeholder="Kurs Açıklaması"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="courseCategory">Kategori</label>
+              <select name="courseCategory" id="courseCategory" class="form-select" required>
+                <option value="">Kategori seçin</option>
+                <option value="programming">Programlama</option>
+                <option value="design">Tasarım</option>
+                <option value="business">İş Dünyası</option>
+                <option value="marketing">Pazarlama</option>
+                <option value="language">Dil</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="coursePrice">Fiyat (₺)</label>
+              <input type="number" name="coursePrice" id="coursePrice" class="form-control" required placeholder="0" min="0">
+            </div>
+
+            <div class="form-check form-switch">
+              <input type="checkbox" name="isPublished" id="isPublished" class="form-check-input custom-switch">
+              <label class="form-check-label" for="isPublished">
+                <span>📢</span> Kursu Yayınla
+              </label>
+            </div>
+          </div>
+
+          <!-- Video Yükleme Bölümü -->
+          <div class="form-section">
+            <div class="section-header">
+              <div class="section-icon">🎥</div>
+              <h3 class="section-title">Video İçerikleri</h3>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Kurs Videoları</label>
+              <div class="video-upload-zone" id="videoUploadZone">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Videolarınızı buraya sürükleyin</div>
+                <div class="upload-hint">veya dosya seçmek için aşağıdaki butona tıklayın</div>
+                <div class="upload-hint mb-3">Birden fazla video seçmek için Ctrl (Windows) veya Cmd (Mac) tuşunu kullanın</div>
+                
+                <div class="file-input-wrapper">
+                  <button type="button" class="file-input-btn" id="fileSelectBtn">
+                    Dosya Seç
+                  </button>
+                  <input type="file" 
+                         name="videos" 
+                         id="videoInput" 
+                         multiple 
+                         accept="video/*"
+                         class="hidden-file-input">
+                </div>
+              </div>
+              
+              <!-- Seçilen dosyaları göstermek için -->
+              <div class="file-list" id="fileList"></div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-button" id="submitBtn">
+            Kursu Kaydet
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+$(document).ready(function() {
+    // Dosya seç butonu için click event
+    $('#fileSelectBtn').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('#videoInput').click();
+    });
+
+    // Upload zone'a tıklandığında da dosya seçme işlemi çalışsın
+    $('#videoUploadZone').on('click', function(e) {
+        // Eğer buton'a tıklanmışsa tekrar tetikleme
+        if (!$(e.target).closest('#fileSelectBtn').length) {
+            $('#videoInput').click();
+        }
+    });
+
+    // File input change event
+    $('#videoInput').on('change', function() {
+        const files = this.files;
+        const fileCount = files.length;
+        const uploadIcon = $('.upload-icon');
+        const uploadText = $('.upload-text');
+        const uploadZone = $('#videoUploadZone');
+        const fileList = $('#fileList');
+        
+        if (fileCount > 0) {
+            // UI güncelleme
+            uploadIcon.text('✅');
+            uploadText.text(`${fileCount} video dosyası seçildi`);
+            uploadZone.css({
+                'border-color': '#28a745',
+                'background': 'rgba(40, 167, 69, 0.1)'
+            });
+            
+            // Dosya listesini göster
+            let fileListHtml = '';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                fileListHtml += `
+                    <div class="file-item">
+                        <div class="file-icon">🎥</div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${fileSize}</div>
+                    </div>
+                `;
+            }
+            fileList.html(fileListHtml).show();
+            
+        } else {
+            // Reset UI
+            uploadIcon.text('📁');
+            uploadText.text('Videolarınızı buraya sürükleyin');
+            uploadZone.css({
+                'border-color': '#4facfe',
+                'background': 'rgba(79, 172, 254, 0.05)'
+            });
+            fileList.hide();
+        }
+    });
+
+    // Form submission
+    $('#courseForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = $('#submitBtn');
+        const originalText = submitBtn.text();
+        
+        // Button'ı disable et ve loading göster
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Kaydediliyor...');
+        submitBtn.prop('disabled', true);
+        
+        // Form validation
+        const requiredFields = $(this).find('[required]');
+        let isValid = true;
+        
+        requiredFields.each(function() {
+            if (!$(this).val().trim()) {
+                isValid = false;
+                $(this).css('border-color', '#dc3545');
+                return false;
+            } else {
+                $(this).css('border-color', '#4facfe');
+            }
+        });
+        
+        if (!isValid) {
+            submitBtn.text(originalText);
+            submitBtn.prop('disabled', false);
+            alert('Lütfen tüm gerekli alanları doldurun.');
+            return false;
+        }
+        
+        // Gerçek bir form submission'ı simüle et
+        setTimeout(() => {
+            alert('Kurs başarıyla kaydedildi!');
+            submitBtn.text(originalText);
+            submitBtn.prop('disabled', false);
+            // Formu resetle
+            this.reset();
+            $('#videoInput').trigger('change');
+        }, 2000);
+    });
+
+    // Smooth animations on page load
+    $('.form-section').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'translateY(30px)'
+        });
+        
+        setTimeout(() => {
+            $(this).animate({
+                opacity: 1
+            }, 600).css('transform', 'translateY(0)');
+        }, index * 300);
+    });
+    
+    // Progress step animation
+    setTimeout(() => {
+        $('.progress-steps .step').eq(1).addClass('active');
+        setTimeout(() => {
+            $('.progress-steps .step').eq(2).addClass('active');
+        }, 2000);
+    }, 4000);
+
+    // Input focus effects
+    $('.form-control, .form-select').on('focus', function() {
+        $(this).siblings('.form-label').css('color', '#4facfe');
+    }).on('blur', function() {
+        $(this).siblings('.form-label').css('color', '#2c3e50');
+    });
+
+    // Drag and drop functionality
+    const uploadZone = document.getElementById('videoUploadZone');
+    const fileInput = document.getElementById('videoInput');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        uploadZone.style.borderColor = '#28a745';
+        uploadZone.style.background = 'rgba(40, 167, 69, 0.15)';
+        uploadZone.style.transform = 'scale(1.05)';
+    }
+
+    function unhighlight(e) {
+        uploadZone.style.borderColor = '#4facfe';
+        uploadZone.style.background = 'rgba(79, 172, 254, 0.05)';
+        uploadZone.style.transform = 'scale(1)';
+    }
+
+    uploadZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        // Manuel olarak FileList oluştur
+        const input = document.getElementById('videoInput');
+        input.files = files;
+        $(input).trigger('change');
+    }
+});
+</script>
+{% endblock extra_scripts %}
+
+</body>
+</html>
